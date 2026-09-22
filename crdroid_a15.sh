@@ -18,5 +18,4 @@ curl -s -L "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/
 
 source build/envsetup.sh
 
-breakfast crdroid_alphaplus
-m bacon
+brunch alphaplus

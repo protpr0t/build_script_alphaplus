@@ -1,3 +1,5 @@
+sudo apt-get update && sudo apt-get install -y ccache
+
 rm -rf .repo/local_manifests/
 rm -rf device/lge
 rm -rf kernel/lge
@@ -13,6 +15,8 @@ repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --depth=1 --g
 
 mkdir -p .repo/local_manifests
 curl -s -L "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/main/local_manifest.xml" -o .repo/local_manifests/alphaplus.xml
+
+find .repo/projects .repo/project-objects -type d -name "hooks" -exec rm -rf {} + 2>/dev/null
 
 /opt/crave/resync.sh
 

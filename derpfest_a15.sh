@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# ===================================================
+# GOFILE CONFIGURATION
+# Upload target folder: https://gofile.io/d/L5haKk4c
+# ===================================================
+GOFILE_FOLDER_ID="L5haKk4c"
+
 # 1. Initialize DerpFest 15.2 repository
 repo init -u https://github.com/DerpFest-LOS/android_manifest.git -b 15.2 --depth=1 --git-lfs --no-clone-bundle
 
@@ -36,3 +42,38 @@ source build/envsetup.sh
 make installclean
 lunch derp_alphaplus-bp1a-userdebug
 mka derp
+
+# 7. Locate built zip and upload directly to GoFile link folder
+OUT_DIR="out/target/product/alphaplus"
+ROM_ZIP=$(find "$OUT_DIR" -maxdepth 1 -type f -name "DerpFest*.zip" ! -name "*ota*.zip" | head -n 1)
+
+if [ -f "$ROM_ZIP" ]; then
+    echo "========================================"
+    echo "Build success! Found ZIP: $ROM_ZIP"
+    echo "Uploading to https://gofile.io/d/$GOFILE_FOLDER_ID..."
+    echo "========================================"
+
+    # Ensure dependencies are present
+    command -v jq >/dev/null 2>&1 || { apt-get update && apt-get install -y jq; }
+    command -v curl >/dev/null 2>&1 || { apt-get update && apt-get install -y curl; }
+
+    # Get active upload server
+    SERVER=$(curl -s https://api.gofile.io/servers | jq -r '.data.servers[0].name')
+
+    if [ -n "$SERVER" ] && [ "$SERVER" != "null" ]; then
+        # Upload directly to folder ID without token
+        RESPONSE=$(curl -s -F "file=@$ROM_ZIP" -F "folderId=$GOFILE_FOLDER_ID" "https://${SERVER}.gofile.io/contents/uploadfile")
+        DOWNLOAD_PAGE=$(echo "$RESPONSE" | jq -r '.data.downloadPage')
+
+        echo "========================================"
+        echo "Upload Complete!"
+        echo "Folder Link: https://gofile.io/d/$GOFILE_FOLDER_ID"
+        echo "Direct File Link: $DOWNLOAD_PAGE"
+        echo "========================================"
+    else
+        echo "Error: Could not retrieve a valid GoFile server."
+    fi
+else
+    echo "Error: DerpFest zip file not found in $OUT_DIR."
+    exit 1
+fi

@@ -15,12 +15,8 @@ mkdir -p .repo/local_manifests
 curl -fL "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/main/local_manifest.xml" \
     -o .repo/local_manifests/alphaplus.xml
 
-# Fix repo names inside local manifest if fetched directly from remote
-sed -i 's/proprietary_vendor_lge_alphaplus/android_vendor_lge_alphaplus/g' .repo/local_manifests/alphaplus.xml
-sed -i 's/proprietary_vendor_lge_sm8150-common/android_vendor_lge_sm8150-common/g' .repo/local_manifests/alphaplus.xml
-
-# 3. Sync repositories using Crave resync script
-/opt/crave/resync.sh
+# 3. Sync repositories with force-sync to handle hook mismatches
+/opt/crave/resync.sh || repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
 # 4. Configure 50G ccache
 if command -v ccache >/dev/null 2>&1; then

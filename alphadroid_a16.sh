@@ -9,8 +9,8 @@ rm -rf out/target/product/*/system/etc/Changelog.txt \
        out/target/product/*/obj/ETC/Changelog.txt_intermediates \
        out/target/product/*/gen/ETC/Changelog.txt_intermediates
 
-# Initialize crDroid 16.0
-repo init -u https://github.com/crdroidandroid/android.git -b 16.0 --depth=1 --git-lfs --no-clone-bundle
+# 2. Initialize AlphaDroid (Android 16 / A16 baseline)
+repo init -u https://github.com/AlphaDroid-AOSP/manifest.git -b alpha-16 --depth=1 --git-lfs --no-clone-bundle
 
 # Clone local manifest
 git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b main .repo/local_manifests

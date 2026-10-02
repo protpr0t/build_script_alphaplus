@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
 
-# 1. Cleanup folder .repo, manifest, dan direktori out
-rm -rf .repo/
-rm -rf out/target/product/alphaplus
-# Cleanup previous changelog to make it always fresh
-rm -rf out/target/product/*/system/etc/Changelog.txt \
-       out/target/product/*/obj/ETC/Changelog.txt_intermediates \
-       out/target/product/*/gen/ETC/Changelog.txt_intermediates
-
 # 2. Nonaktifkan prompt interaktif Git credentials
 git config --global core.askPass ""
 git config --global credential.helper ""

@@ -11,9 +11,10 @@ rm -rf out/target/product/*/system/etc/Changelog.txt \
 
 # 2. Nonaktifkan prompt interaktif Git credentials
 git config --global core.askPass ""
+git config --global credential.helper ""
 
 # 3. Initialize AlphaDroid (Android 16 / A16 baseline)
-repo init -u https://github.com/AlphaDroid-AOSP/manifest.git -b alpha-16 --depth=1 --git-lfs --no-clone-bundle
+repo init -u https://github.com/AlphaDroid-AOSP/manifest.git -b alpha-16 --depth=1 --git-lfs --no-clone-bundle --no-repo-verify
 
 # 4. Clone local manifest
 git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b main .repo/local_manifests || {

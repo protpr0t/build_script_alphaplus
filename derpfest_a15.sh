@@ -8,7 +8,7 @@ set -e
 GOFILE_FOLDER_ID="L5haKk4c"
 
 # 1. Initialize DerpFest 15.2 repository
-repo init -u https://github.com/DerpFest-LOS/android_manifest.git -b 15.2 --git-lfs
+repo init -u https://github.com/DerpFest-LOS/android_manifest.git -b 15.2 --git-lfs --no-clone-bundle
 
 # 2. Fetch local manifest
 mkdir -p .repo/local_manifests

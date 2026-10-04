@@ -5,7 +5,7 @@ set -e
 rm -rf .repo/local_manifests
 
 # 2. Initialize crDroid 15.0 repository
-repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs
+repo init -u https://github.com/crdroidandroid/android.git -b 15.0 --git-lfs --no-clone-bundle
 
 # 3. Pull local manifest directly from protpr0t
 mkdir -p .repo/local_manifests

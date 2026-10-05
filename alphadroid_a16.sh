@@ -8,7 +8,7 @@ git config --global credential.helper ""
 
 # 2. Initialize AlphaDroid A16 using the correct project manifest URL
 repo init -u https://github.com/alphadroid-project/manifest.git \
-          -b alpha-16 \
+          -b alpha-16.2 \
           --depth=1 \
           --git-lfs \
           --no-clone-bundle \

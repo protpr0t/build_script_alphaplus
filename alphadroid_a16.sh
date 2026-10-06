@@ -21,19 +21,12 @@ git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b 
         -o .repo/local_manifests/alphaplus.xml
 }
 
-# 4. PERBAIKAN REPOSITORI VENDOR (Ubah ke sumber publik yang valid)
-MANIFEST_FILE=".repo/local_manifests/alphaplus.xml"
-if [ -f "$MANIFEST_FILE" ]; then
-    echo "=== Patching local manifest vendor repositories ==="
-    # Perbaiki nama repo vendor alphaplus milik TheMuppets
-    sed -i 's|TheMuppets/android_vendor_lge_alphaplus|TheMuppets/proprietary_vendor_lge_alphaplus|g' "$MANIFEST_FILE"
-    
-    # Perbaiki repo vendor sm8150-common milik rainbowdashh ke TheMuppets publik
-    sed -i 's|rainbowdashh/android_vendor_lge_sm8150-common|TheMuppets/proprietary_vendor_lge_sm8150-common|g' "$MANIFEST_FILE"
-    
-    # Perbaiki repo kernel/device sm8150 jika ada
-    sed -i 's|rainbowdashh/android_device_lge_sm8150-common|protpr0t/android_device_lge_sm8150-common|g' "$MANIFEST_FILE"
-    sed -i 's|rainbowdashh/android_kernel_lge_sm8150|LineageOS/android_kernel_lge_sm8150|g' "$MANIFEST_FILE"
+# 4. Clean conflicting sepolicy path using git/repo without crave devcall
+if [ -d "device/lineage/sepolicy" ]; then
+    git -C device/lineage/sepolicy clean -fdx 2>/dev/null || true
+fi
+if [ -d "device/alpha/sepolicy" ]; then
+    git -C device/alpha/sepolicy clean -fdx 2>/dev/null || true
 fi
 
 # 5. Sync repositories

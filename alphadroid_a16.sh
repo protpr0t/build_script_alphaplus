@@ -21,7 +21,10 @@ git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b 
         -o .repo/local_manifests/alphaplus.xml
 }
 
-# 4. Clean conflicting sepolicy path using git/repo without crave devcall
+# Fix for the duplicate path error during sync
+sed -i '/path="hardware\/lge"/d' .repo/local_manifests/alphaplus.xml
+
+# 4. Clean conflicting sepolicy path using git/repo without rm -rf
 if [ -d "device/lineage/sepolicy" ]; then
     git -C device/lineage/sepolicy clean -fdx 2>/dev/null || true
 fi
@@ -41,17 +44,7 @@ if [ -f "$CP_TARGET" ]; then
     fi
 fi
 
-# 7. Configure CCACHE (30G Limit)
-if command -v ccache >/dev/null 2>&1; then
-    export USE_CCACHE=1
-    export CCACHE_EXEC=$(which ccache)
-    export CCACHE_DIR="${HOME}/.ccache"
-    ccache --set-config max_size=30G
-    ccache --set-config compression=true
-    ccache --show-config
-fi
-
-# 8. Set environment flags & Jalankan Build
+# 7. Set environment flags & Jalankan Build
 export DISABLE_NINJA_SANDBOX=true
 source build/envsetup.sh
 

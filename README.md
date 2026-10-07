@@ -16,11 +16,11 @@ crave run --no-patch -- "curl -sL https://raw.githubusercontent.com/protpr0t/bui
 • derpfest A15
 ```
 
-crave run --no-patch -- "curl -sL https://raw.githubusercontent.com/protpr0t/build_script_alphaplus/refs/heads/main/derpfest_a15.sh | bash"
+crave -n run --projectID 93 --no-patch -- "curl -sL https://raw.githubusercontent.com/protpr0t/build_script_alphaplus/refs/heads/main/derpfest_a15.sh | bash"
 ```
 
 • alphadroid A16
 ```
 
-crave run --no-patch -- "curl -sL https://raw.githubusercontent.com/protpr0t/build_script_alphaplus/refs/heads/main/alphadroid_a16.sh | bash"
+crave -n run --projectID 99 --no-patch -- "curl -sL https://raw.githubusercontent.com/protpr0t/build_script_alphaplus/refs/heads/main/alphadroid_a16.sh | bash"
 ```

@@ -1,62 +1,52 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-# 1. Nonaktifkan otentikasi interaktif Git
 export GIT_TERMINAL_PROMPT=0
 git config --global core.askPass ""
 git config --global credential.helper ""
 
-# 2. Safely clear the broken local manifests from previous Crave runs (without rm -rf)
-# We move it to a backup folder so repo init doesn't read the old duplicate paths.
-if [ -d ".repo/local_manifests" ]; then
-    mv .repo/local_manifests ".repo/local_manifests_backup_$(date +%s)" 2>/dev/null || true
-fi
+# Repo init first so .repo exists
+repo init -u https://github.com/alphadroid-project/manifest.git \
+    -b alpha-16.2 \
+    --depth=1 \
+    --git-lfs \
+    --no-clone-bundle \
+    --no-repo-verify
 
-# 3. Fetch local manifest fresh
-git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b main .repo/local_manifests || {
-    mkdir -p .repo/local_manifests
+# Prepare local manifests
+mkdir -p .repo/local_manifests
+
+# Fetch local manifest
+if git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b main /tmp/local_manifest_alphaplus 2>/dev/null; then
+    cp /tmp/local_manifest_alphaplus/*.xml .repo/local_manifests/ 2>/dev/null || true
+else
     curl -fL "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/main/local_manifest.xml" \
         -o .repo/local_manifests/alphaplus.xml
-}
-
-# 4. Remove hardware/lge from local manifest BEFORE repo init to prevent 'duplicate path' error
-if [ -f ".repo/local_manifests/alphaplus.xml" ]; then
-    sed -i '/hardware\/lge/d' .repo/local_manifests/alphaplus.xml
-fi
-if [ -f ".repo/local_manifests/local_manifest.xml" ]; then
-    sed -i '/hardware\/lge/d' .repo/local_manifests/local_manifest.xml
 fi
 
-# 5. Initialize AlphaDroid A16 using the correct project manifest URL
-repo init -u https://github.com/alphadroid-project/manifest.git \
-          -b alpha-16.2 \
-          --depth=1 \
-          --git-lfs \
-          --no-clone-bundle \
-          --no-repo-verify
+# Optional: remove hardware/lge references only if they are causing duplicate-path issues
+for f in .repo/local_manifests/*.xml; do
+    [ -f "$f" ] || continue
+    sed -i '/hardware\/lge/d' "$f"
+done
 
-# 6. Clean conflicting sepolicy path using git/repo without rm -rf
-if [ -d "device/lineage/sepolicy" ]; then
-    git -C device/lineage/sepolicy clean -fdx 2>/dev/null || true
-fi
-if [ -d "device/alpha/sepolicy" ]; then
-    git -C device/alpha/sepolicy clean -fdx 2>/dev/null || true
-fi
-
-# 7. Sync repositories
+# Sync source
 /opt/crave/resync.sh
 
-# 8. Patch ContactsProvider SQLiteTokenizer compilation error jika ada
+# Patch ContactsProvider if the known token exists
 CP_TARGET="packages/providers/ContactsProvider/src/com/android/providers/contacts/util/SelectionBuilder.java"
-if [ -f "$CP_TARGET" ]; then
-    if grep -q 'SQLiteTokenizer\.OPTION_CHECK_BRACKETS' "$CP_TARGET"; then
-        echo "=== Patching ContactsProvider SelectionBuilder.java ==="
-        sed -i 's/SQLiteTokenizer\.OPTION_CHECK_BRACKETS/0/g' "$CP_TARGET"
-    fi
+if [ -f "$CP_TARGET" ] && grep -q 'SQLiteTokenizer\.OPTION_CHECK_BRACKETS' "$CP_TARGET"; then
+    echo "=== Patching ContactsProvider SelectionBuilder.java ==="
+    sed -i 's/SQLiteTokenizer\.OPTION_CHECK_BRACKETS/0/g' "$CP_TARGET"
 fi
 
-# 9. Set environment flags & Jalankan Build
+# Build environment
 export DISABLE_NINJA_SANDBOX=true
 source build/envsetup.sh
+lunch alphaplus-userdebug
 
-brunch alphaplus
+# Clean build outputs before building
+make installclean
+
+# Build
+mka bacon

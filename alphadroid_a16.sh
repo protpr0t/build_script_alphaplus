@@ -11,22 +11,14 @@ if [ -d ".repo/local_manifests" ]; then
     mv .repo/local_manifests ".repo/local_manifests_backup_$(date +%s)" 2>/dev/null || true
 fi
 
-# 3. Fetch local manifest fresh
+# 3. Fetch local manifest fresh (This will pull your updated XML with the <remove-project> tags)
 git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b main .repo/local_manifests || {
     mkdir -p .repo/local_manifests
     curl -fL "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/main/local_manifest.xml" \
         -o .repo/local_manifests/alphaplus.xml
 }
 
-# 4. Remove hardware/lge from local manifest BEFORE repo init to prevent 'duplicate path' error
-if [ -f ".repo/local_manifests/alphaplus.xml" ]; then
-    sed -i '/hardware\/lge/d' .repo/local_manifests/alphaplus.xml
-fi
-if [ -f ".repo/local_manifests/local_manifest.xml" ]; then
-    sed -i '/hardware\/lge/d' .repo/local_manifests/local_manifest.xml
-fi
-
-# 5. Initialize AlphaDroid A16 using the correct project manifest URL
+# 4. Initialize AlphaDroid A16
 repo init -u https://github.com/alphadroid-project/manifest.git \
           -b alpha-16.2 \
           --depth=1 \
@@ -34,7 +26,7 @@ repo init -u https://github.com/alphadroid-project/manifest.git \
           --no-clone-bundle \
           --no-repo-verify
 
-# 6. Clean conflicting sepolicy path using git/repo without rm -rf
+# 5. Clean conflicting sepolicy path safely
 if [ -d "device/lineage/sepolicy" ]; then
     git -C device/lineage/sepolicy clean -fdx 2>/dev/null || true
 fi
@@ -42,10 +34,10 @@ if [ -d "device/alpha/sepolicy" ]; then
     git -C device/alpha/sepolicy clean -fdx 2>/dev/null || true
 fi
 
-# 7. Sync repositories
+# 6. Sync repositories
 /opt/crave/resync.sh
 
-# 8. Patch ContactsProvider SQLiteTokenizer compilation error jika ada
+# 7. Patch ContactsProvider SQLiteTokenizer compilation error jika ada
 CP_TARGET="packages/providers/ContactsProvider/src/com/android/providers/contacts/util/SelectionBuilder.java"
 if [ -f "$CP_TARGET" ]; then
     if grep -q 'SQLiteTokenizer\.OPTION_CHECK_BRACKETS' "$CP_TARGET"; then
@@ -54,13 +46,13 @@ if [ -f "$CP_TARGET" ]; then
     fi
 fi
 
-# 9. Set environment flags & Jalankan Build
+# 8. Set environment flags & Disable strict bash checks temporarily
 export DISABLE_NINJA_SANDBOX=true
 
-# Disable strict bash variable checking temporarily to prevent 'TOP: unbound variable'
 set +u
 set +e
 source build/envsetup.sh
 set -e
 
+# 9. Jalankan Build
 brunch alphaplus

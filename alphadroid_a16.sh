@@ -1,32 +1,28 @@
 #!/bin/bash
 set -e
 
-# 1. Nonaktifkan otentikasi interaktif Git
-export GIT_TERMINAL_PROMPT=0
-git config --global core.askPass ""
-git config --global credential.helper ""
+# 1. Clean old manifests without rm -rf
+mkdir -p .repo/local_manifests
+find .repo/local_manifests -type f -name "*.xml" -delete
 
-# 2. Safely clear the broken local manifests from previous Crave runs (without rm -rf)
-if [ -d ".repo/local_manifests" ]; then
-    mv .repo/local_manifests ".repo/local_manifests_backup_$(date +%s)" 2>/dev/null || true
-fi
+# 2. Inject fresh manifest directly
+cat << 'EOF' > .repo/local_manifests/alphaplus.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <project path="device/lge/alphaplus" name="protpr0t/android_device_lge_alphaplus" remote="github" revision="alphadroid-23.2" clone-depth="1" />
+  <project path="device/lge/sm8150-common" name="protpr0t/android_device_lge_sm8150-common" remote="github" revision="lineage-23.2" clone-depth="1" />
+  <project path="hardware/lge" name="LineageOS/android_hardware_lge" remote="github" revision="lineage-23.2" clone-depth="1" />
+  <project path="kernel/lge/sm8150" name="rainbowdashh/android_kernel_lge_sm8150" remote="github" revision="lineage-23.2" clone-depth="1" />
+  <project path="vendor/lge/alphaplus" name="protpr0t/proprietary_vendor_lge_alphaplus" remote="github" revision="lineage-22.2" clone-depth="1" />
+  <project path="vendor/lge/sm8150-common" name="protpr0t/proprietary_vendor_lge_sm8150-common" remote="github" revision="lineage-23.2" clone-depth="1" />
+  <project path="hardware/pixelworks/interfaces" name="LineageOS/android_hardware_pixelworks_interfaces" remote="github" revision="lineage-23.2" clone-depth="1" />
+</manifest>
+EOF
 
-# 3. Fetch local manifest fresh (This will pull your updated XML with the <remove-project> tags)
-git clone https://github.com/protpr0t/local_manifest_alphaplus.git --depth 1 -b main .repo/local_manifests || {
-    mkdir -p .repo/local_manifests
-    curl -fL "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/main/local_manifest.xml" \
-        -o .repo/local_manifests/alphaplus.xml
-}
+# 3. Initialize AlphaDroid
+repo init -u https://github.com/alphadroid-project/manifest.git -b alpha-16.2 --depth=1 --git-lfs --no-clone-bundle
 
-# 4. Initialize AlphaDroid A16
-repo init -u https://github.com/alphadroid-project/manifest.git \
-          -b alpha-16.2 \
-          --depth=1 \
-          --git-lfs \
-          --no-clone-bundle \
-          --no-repo-verify
-
-# 5. Clean conflicting sepolicy path safely
+# 4. Clean conflicting sepolicy symlinks safely before sync
 if [ -d "device/lineage/sepolicy" ]; then
     git -C device/lineage/sepolicy clean -fdx 2>/dev/null || true
 fi
@@ -34,25 +30,21 @@ if [ -d "device/alpha/sepolicy" ]; then
     git -C device/alpha/sepolicy clean -fdx 2>/dev/null || true
 fi
 
-# 6. Sync repositories
+# 5. Sync repositories
 /opt/crave/resync.sh
 
-# 7. Patch ContactsProvider SQLiteTokenizer compilation error jika ada
-CP_TARGET="packages/providers/ContactsProvider/src/com/android/providers/contacts/util/SelectionBuilder.java"
-if [ -f "$CP_TARGET" ]; then
-    if grep -q 'SQLiteTokenizer\.OPTION_CHECK_BRACKETS' "$CP_TARGET"; then
-        echo "=== Patching ContactsProvider SelectionBuilder.java ==="
-        sed -i 's/SQLiteTokenizer\.OPTION_CHECK_BRACKETS/0/g' "$CP_TARGET"
-    fi
-fi
+# 6. Clean up Maintainer props
+find device/lge/ -type f -name "*.prop" -exec sed -i '/AlphaDroidMaintainer/d' {} +
+find vendor/alpha/ -type f -name "*.mk" -exec sed -i '/AlphaDroidMaintainer/d' {} + 2>/dev/null
 
-# 8. Set environment flags & Disable strict bash checks temporarily
 export DISABLE_NINJA_SANDBOX=true
 
+# 7. Disable strict bash checks temporarily to prevent 'TOP: unbound variable'
 set +u
-set +e
 source build/envsetup.sh
-set -e
+set -u
 
-# 9. Jalankan Build
-brunch alphaplus
+# 8. Build
+breakfast alphaplus
+m installclean
+mka bacon

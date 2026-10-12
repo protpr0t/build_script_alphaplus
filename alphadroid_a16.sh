@@ -33,7 +33,10 @@ fi
 # 5. Sync repositories
 /opt/crave/resync.sh
 
-# 6. Clean up Maintainer props
+# 6. Apply fixes and clean up props
+# Fix duplicate hal_lgdata sepolicy attribute causing the vendor_sepolicy.cil failure
+sed -i '/attribute hal_lgdata;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
+
 find device/lge/ -type f -name "*.prop" -exec sed -i '/AlphaDroidMaintainer/d' {} +
 find vendor/alpha/ -type f -name "*.mk" -exec sed -i '/AlphaDroidMaintainer/d' {} + 2>/dev/null
 

@@ -39,10 +39,9 @@ find vendor/alpha/ -type f -name "*.mk" -exec sed -i '/AlphaDroidMaintainer/d' {
 
 export DISABLE_NINJA_SANDBOX=true
 
-# 7. Disable strict bash checks temporarily to prevent 'TOP: unbound variable'
+# 7. Disable strict bash checks entirely for the build phase
 set +u
 source build/envsetup.sh
-set -u
 
 # 8. Build
 breakfast alphaplus

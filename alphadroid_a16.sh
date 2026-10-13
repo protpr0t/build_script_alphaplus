@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-# 1. Clean old manifests without rm -rf
+# 1. Clean old manifests safely
 mkdir -p .repo/local_manifests
 find .repo/local_manifests -type f -name "*.xml" -delete
 
-# 2. Inject fresh manifest directly
+# 2. Inject fresh manifest directly for alphaplus
 cat << 'EOF' > .repo/local_manifests/alphaplus.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -38,6 +38,7 @@ fi
 if [ -f "device/lge/sm8150-common/sepolicy/vendor/attributes" ]; then
     sed -i '/attribute hal_lgdata;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
     sed -i '/attribute hal_lgdata_client;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
+    sed -i '/attribute hal_lgdata_server;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
 fi
 
 find device/lge/ -type f -name "*.prop" -exec sed -i '/AlphaDroidMaintainer/d' {} +

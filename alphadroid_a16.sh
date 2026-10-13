@@ -34,8 +34,11 @@ fi
 /opt/crave/resync.sh
 
 # 6. Apply fixes and clean up props
-# Fix duplicate hal_lgdata sepolicy attribute causing the vendor_sepolicy.cil failure
-sed -i '/attribute hal_lgdata;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
+# Fix duplicate sepolicy attributes causing the vendor_sepolicy.cil failures
+if [ -f "device/lge/sm8150-common/sepolicy/vendor/attributes" ]; then
+    sed -i '/attribute hal_lgdata;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
+    sed -i '/attribute hal_lgdata_client;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
+fi
 
 find device/lge/ -type f -name "*.prop" -exec sed -i '/AlphaDroidMaintainer/d' {} +
 find vendor/alpha/ -type f -name "*.mk" -exec sed -i '/AlphaDroidMaintainer/d' {} + 2>/dev/null

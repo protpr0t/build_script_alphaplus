@@ -1,11 +1,9 @@
 #!/bin/bash
 set -e
 
-# 1. Clean old manifests safely
+destroy .repo/local_manifests || true
 mkdir -p .repo/local_manifests
-find .repo/local_manifests -type f -name "*.xml" -delete
 
-# 2. Inject fresh manifest directly for alphaplus
 cat << 'EOF' > .repo/local_manifests/alphaplus.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -19,10 +17,8 @@ cat << 'EOF' > .repo/local_manifests/alphaplus.xml
 </manifest>
 EOF
 
-# 3. Initialize AlphaDroid
 repo init -u https://github.com/alphadroid-project/manifest.git -b alpha-16.2 --depth=1 --git-lfs --no-clone-bundle
 
-# 4. Clean conflicting sepolicy symlinks safely before sync
 if [ -d "device/lineage/sepolicy" ]; then
     git -C device/lineage/sepolicy clean -fdx 2>/dev/null || true
 fi
@@ -30,18 +26,14 @@ if [ -d "device/alpha/sepolicy" ]; then
     git -C device/alpha/sepolicy clean -fdx 2>/dev/null || true
 fi
 
-# 5. Sync repositories
 /opt/crave/resync.sh
 
-# 6. Apply fixes and clean up props
-# Fix duplicate sepolicy attributes
 if [ -f "device/lge/sm8150-common/sepolicy/vendor/attributes" ]; then
     sed -i '/attribute hal_lgdata;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
     sed -i '/attribute hal_lgdata_client;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
     sed -i '/attribute hal_lgdata_server;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
 fi
 
-# Fix duplicate fingerprint_device type
 if [ -f "device/lge/sm8150-common/sepolicy/vendor/device.te" ]; then
     sed -i '/type fingerprint_device, dev_type;/d' device/lge/sm8150-common/sepolicy/vendor/device.te
 fi
@@ -51,11 +43,9 @@ find vendor/alpha/ -type f -name "*.mk" -exec sed -i '/AlphaDroidMaintainer/d' {
 
 export DISABLE_NINJA_SANDBOX=true
 
-# 7. Disable strict bash checks entirely for the build phase
 set +u
 source build/envsetup.sh
 
-# 8. Build
 breakfast alphaplus
 m installclean
 mka bacon

@@ -36,6 +36,7 @@ fi
 
 if [ -f "device/lge/sm8150-common/sepolicy/vendor/device.te" ]; then
     sed -i '/type fingerprint_device, dev_type;/d' device/lge/sm8150-common/sepolicy/vendor/device.te
+    sed -i '/type encrypt_block_device, dev_type;/d' device/lge/sm8150-common/sepolicy/vendor/device.te
 fi
 
 find device/lge/ -type f -name "*.prop" -exec sed -i '/AlphaDroidMaintainer/d' {} +

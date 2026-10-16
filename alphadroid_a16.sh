@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
+echo "Cleaning up old local manifests safely..."
 destroy .repo/local_manifests || true
 mkdir -p .repo/local_manifests
 
+echo "Writing local manifest for alphaplus..."
 cat << 'EOF' > .repo/local_manifests/alphaplus.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -17,8 +19,10 @@ cat << 'EOF' > .repo/local_manifests/alphaplus.xml
 </manifest>
 EOF
 
+echo "Initializing AlphaDroid 16.2 repository..."
 repo init -u https://github.com/alphadroid-project/manifest.git -b alpha-16.2 --depth=1 --git-lfs --no-clone-bundle
 
+echo "Cleaning sepolicy directories if they exist..."
 if [ -d "device/lineage/sepolicy" ]; then
     git -C device/lineage/sepolicy clean -fdx 2>/dev/null || true
 fi
@@ -26,8 +30,10 @@ if [ -d "device/alpha/sepolicy" ]; then
     git -C device/alpha/sepolicy clean -fdx 2>/dev/null || true
 fi
 
+echo "Running Crave resync..."
 /opt/crave/resync.sh
 
+echo "Patching sm8150-common sepolicy attributes and device.te..."
 if [ -f "device/lge/sm8150-common/sepolicy/vendor/attributes" ]; then
     sed -i '/attribute hal_lgdata;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
     sed -i '/attribute hal_lgdata_client;/d' device/lge/sm8150-common/sepolicy/vendor/attributes
@@ -39,14 +45,15 @@ if [ -f "device/lge/sm8150-common/sepolicy/vendor/device.te" ]; then
     sed -i '/type encrypt_block_device, dev_type;/d' device/lge/sm8150-common/sepolicy/vendor/device.te
 fi
 
+echo "Removing old AlphaDroid maintainer props..."
 find device/lge/ -type f -name "*.prop" -exec sed -i '/AlphaDroidMaintainer/d' {} +
 find vendor/alpha/ -type f -name "*.mk" -exec sed -i '/AlphaDroidMaintainer/d' {} + 2>/dev/null
 
-export DISABLE_NINJA_SANDBOX=true
-
+echo "Setting up build environment..."
 set +u
 source build/envsetup.sh
 
-breakfast alphaplus
+echo "Selecting target and initiating build..."
+lunch alpha_alphaplus-userdebug
 m installclean
 mka bacon

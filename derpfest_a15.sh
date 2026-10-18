@@ -8,11 +8,16 @@ curl -fL "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/ma
 
 /opt/crave/resync.sh
 
+# Robust ccache setup for Crave
+export CCACHE_DIR=$(pwd)/.ccache
 export USE_CCACHE=1
-export CCACHE_EXEC=/usr/bin/ccache
-ccache -M 30G
+export CCACHE_EXEC=$(which ccache)
+$CCACHE_EXEC -M 50G
+
+# Force Soong to use the system's ninja binary
+export SOONG_NINJA=ninja
 
 source build/envsetup.sh
 make installclean
-lunch derp_alphaplus-bp1a-userdebug
+lunch derp_alphaplus-ap3a-userdebug
 mka derp

@@ -16,12 +16,14 @@ sudo apt-get install -y ccache
 export CCACHE_DIR=$(pwd)/.ccache
 export USE_CCACHE=1
 export CCACHE_EXEC=$(which ccache)
-$CCACHE_EXEC -M 50G
+$CCACHE_EXEC -M 30G
 
 # Force Soong to use the system's ninja binary
 export SOONG_NINJA=ninja
 
 source build/envsetup.sh
 make installclean
-lunch derp_alphaplus-ap3a-userdebug
+
+# Use the standard lunch target format without a release suffix
+lunch derp_alphaplus-userdebug
 mka derp

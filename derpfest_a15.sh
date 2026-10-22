@@ -8,10 +8,6 @@ curl -fL "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/ma
 
 /opt/crave/resync.sh
 
-# Install ccache before configuring it
-sudo apt-get update
-sudo apt-get install -y ccache
-
 # Robust ccache setup for Crave
 export CCACHE_DIR=$(pwd)/.ccache
 export USE_CCACHE=1

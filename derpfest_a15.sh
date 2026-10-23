@@ -3,15 +3,19 @@ set -e
 
 repo init -u https://github.com/DerpFest-LOS/android_manifest.git -b 15.2 --git-lfs --no-clone-bundle --depth=1
 
-mkdir -p .repo/local_manifests
-curl -fL "https://raw.githubusercontent.com/protpr0t/local_manifest_alphaplus/main/local_manifest.xml" -o .repo/local_manifests/alphaplus.xml
+if [ -d ".repo/local_manifests" ]; then
+    git -C .repo/local_manifests pull
+else
+    git clone --depth=1 https://github.com/protpr0t/local_manifest_alphaplus.git .repo/local_manifests
+fi
 
 /opt/crave/resync.sh
 
+apt-get install -y ccache
 export CCACHE_DIR=$(pwd)/.ccache
 export USE_CCACHE=1
-export CCACHE_EXEC=$(which ccache)
-$CCACHE_EXEC -M 30G
+export CCACHE_EXEC=/usr/bin/ccache
+/usr/bin/ccache -M 30G
 
 export SOONG_NINJA=ninja
 

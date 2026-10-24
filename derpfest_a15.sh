@@ -30,7 +30,12 @@ export CCACHE_EXEC=/usr/bin/ccache
 export SOONG_NINJA=ninja
 
 source build/envsetup.sh
-make installclean
 
-lunch derp_alphaplus-userdebug
+export DERP_BUILD_TYPE=UNOFFICIAL
+
+export WITH_GAPPS=false
+
+lunch derp_alphaplus-ap3a-userdebug
+
+make installclean
 mka derp

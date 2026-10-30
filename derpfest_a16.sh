@@ -8,7 +8,7 @@ export CCACHE_EXEC=/usr/bin/ccache
 LOCAL_MANIFEST_BRANCH=main
 
 if [ -d .repo/manifests ]; then
-  git -C .repo/manifests stash --include-untracked >/dev/null 2>&1 || true
+  git -C .repo/manifests clean -fd
 fi
 
 repo init -u https://github.com/DerpFest-AOSP/android_manifest.git -b 16.2 --depth=1 --git-lfs --no-clone-bundle

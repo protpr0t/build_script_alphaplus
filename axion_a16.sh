@@ -17,6 +17,6 @@ git clone https://github.com/protpr0t/android_vendor_lineage-priv_keys.git vendo
 source build/envsetup.sh
 axion alphaplus userdebug gms
 
-make installclean
+m installclean
 
 ax -br -j16

@@ -10,4 +10,5 @@ export EVO_BUILD_TYPE=UNOFFICIAL
 
 . build/envsetup.sh
 lunch lineage_alphaplus-cp2a-eng
+m installclean
 m evolution

@@ -5,7 +5,7 @@ export WITH_GAPPS=true
 export USE_CCACHE=1
 export CCACHE_EXEC=/usr/bin/ccache
 
-LOCAL_MANIFEST_BRANCH=main
+LOCAL_MANIFEST_BRANCH=derpfest
 
 if [ -d .repo/manifests ]; then
   git -C .repo/manifests clean -fd

@@ -8,4 +8,4 @@ git clone https://github.com/protpr0t/local_manifest_alphaplus.git -b main .repo
 source build/envsetup.sh
 lunch alpha_alphaplus-userdebug
 m installclean
-mka bacon
+mka bacon -j16

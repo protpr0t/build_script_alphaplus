@@ -32,4 +32,4 @@ source build/envsetup.sh
 lunch derp_alphaplus-bp4a-userdebug
 
 m installclean
-mka derp
+mka derp -j16

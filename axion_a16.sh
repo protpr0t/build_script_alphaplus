@@ -14,9 +14,15 @@ if [ -d vendor/lineage-priv/keys ]; then
 fi
 git clone https://github.com/protpr0t/android_vendor_lineage-priv_keys.git vendor/lineage-priv/keys
 
+if [ ! -f device/lge/alphaplus/lineage_alphaplus.mk ]; then
+  if [ -d device/lge/alphaplus ]; then
+    mv device/lge/alphaplus /tmp/old_alphaplus_$(date +%s)
+  fi
+  git clone https://github.com/protpr0t/android_device_lge_alphaplus.git -b axion device/lge/alphaplus
+fi
+ls device/lge/alphaplus
+
 source build/envsetup.sh
 axion alphaplus userdebug gms
-
 m installclean
-
 ax -br -j16

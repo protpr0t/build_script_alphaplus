@@ -24,7 +24,8 @@ ls device/lge/alphaplus
 
 export BUILD_USERNAME=protpr0t
 export BUILD_HOSTNAME=crave
- 
+export AXION_BUILD_TYPE=UNOFFICIAL
+
 source build/envsetup.sh
 axion alphaplus userdebug gms
 m installclean

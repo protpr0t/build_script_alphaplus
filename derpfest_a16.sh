@@ -1,6 +1,7 @@
 set -e
 
 export DERP_BUILD_TYPE=UNOFFICIAL
+export DERP_MAINTAINER=protpr0t
 export WITH_GAPPS=true
 export USE_CCACHE=1
 export CCACHE_EXEC=/usr/bin/ccache

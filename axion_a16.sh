@@ -22,6 +22,9 @@ if [ ! -f device/lge/alphaplus/lineage_alphaplus.mk ]; then
 fi
 ls device/lge/alphaplus
 
+export BUILD_USERNAME=protpr0t
+export BUILD_HOSTNAME=crave
+ 
 source build/envsetup.sh
 axion alphaplus userdebug gms
 m installclean

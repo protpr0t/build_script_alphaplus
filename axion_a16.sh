@@ -25,4 +25,4 @@ ls device/lge/alphaplus
 source build/envsetup.sh
 axion alphaplus userdebug gms
 m installclean
-ax -br -j16
+ax -br

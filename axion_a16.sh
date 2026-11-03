@@ -1,4 +1,3 @@
-#!/bin/bash
 set -e
 
 if [ -d .repo/local_manifests ]; then
@@ -16,5 +15,8 @@ fi
 git clone https://github.com/protpr0t/android_vendor_lineage-priv_keys.git vendor/lineage-priv/keys
 
 source build/envsetup.sh
-axion alphaplus gms
+axion alphaplus userdebug gms
+
+make installclean
+
 ax -br

@@ -6,8 +6,8 @@ repo init -u https://github.com/Evolution-X/manifest -b cnb --git-lfs
 git clone https://github.com/protpr0t/local_manifest_alphaplus -b evox-17 .repo/local_manifests
 /opt/crave/resync.sh
 
-export EVO_BUILD_TYPE=Unofficial
+export EVO_BUILD_TYPE=UNOFFICIAL
+
 . build/envsetup.sh
-lunch lineage_alphaplus-cp2a-userdebug
-make installclean
+lunch lineage_alphaplus-cp2a-eng
 m evolution

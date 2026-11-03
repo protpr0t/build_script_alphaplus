@@ -19,4 +19,4 @@ axion alphaplus userdebug gms
 
 make installclean
 
-ax -br
+ax -br -j16

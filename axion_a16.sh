@@ -12,10 +12,10 @@ git clone https://github.com/protpr0t/local_manifest_alphaplus.git -b main .repo
 
 source build/envsetup.sh
 
-export WITH_GMS=true
+# Set unofficial status and use the Axion wrapper for configuration
 export AXION_BUILD_TYPE=UNOFFICIAL
-lunch axion_alphaplus-userdebug
+axion alphaplus userdebug gms
 
 m installclean
 
-ax -br
+ax -br -j16

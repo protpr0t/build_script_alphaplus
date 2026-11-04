@@ -30,3 +30,9 @@ crave -n run --projectID 99 --no-patch -- "curl -sL https://raw.githubuserconten
 
 crave -n run --projectID 99 --no-patch -- "curl -sL https://raw.githubusercontent.com/protpr0t/build_script_alphaplus/refs/heads/main/axion_a16.sh | bash"
 ```
+
+• evox A17
+```
+
+crave -n run --projectID 99 --no-patch -- "curl -sL https://raw.githubusercontent.com/protpr0t/build_script_alphaplus/refs/heads/main/evox_a17.sh | bash"
+```

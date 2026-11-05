@@ -32,6 +32,7 @@ ls kernel/lge/sm8150/arch/arm64/configs/vendor | grep -i alpha || true
 echo "debug - build $(pwd)"
 source build/envsetup.sh
 gk -s || true
+axionSync
 export AXION_BUILD_TYPE=UNOFFICIAL
 axion alphaplus userdebug gms
 m installclean

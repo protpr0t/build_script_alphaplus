@@ -18,8 +18,11 @@ git clone https://github.com/protpr0t/local_manifest_alphaplus.git -b main .repo
 echo "debug - sync $(pwd)"
 /opt/crave/resync.sh
 
-echo "debug - keys $(pwd)"
-backup vendor/lineage-priv/keys
+export BUILD_USERNAME=protpr0t
+export BUILD_HOSTNAME=crave
+export TZ=Asia/Jakarta
+export KBUILD_USERNAME="$BUILD_USERNAME"
+export KBUILD_HOSTNAME="$BUILD_HOSTNAME"
 
 echo "debug - device tree $(pwd)"
 if [ ! -f device/lge/alphaplus/lineage_alphaplus.mk ]; then

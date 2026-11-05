@@ -37,3 +37,17 @@ if [ ! -f .keys_generated ] || [ ! -f "$KEYS_DIR/releasekey.pk8" ]; then
     echo "[LOG 4] Membuat file marker di: $(pwd)"
     touch .keys_generated
     echo "[LOG 5] Proses generate keys selesai"
+fi
+
+# Gagal cepat kalau keys.mk rusak (error "missing separator")
+if make -n -f "$KEYS_DIR/keys.mk" 2>&1 | grep -q "missing separator"; then
+    echo "ERROR: $KEYS_DIR/keys.mk tidak valid" >&2
+    exit 1
+fi
+
+export EVO_BUILD_TYPE=UNOFFICIAL
+
+. build/envsetup.sh
+lunch lineage_alphaplus-cp2a-eng
+m installclean
+m evolution

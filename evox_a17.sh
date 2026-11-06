@@ -9,8 +9,13 @@ repo init -u https://github.com/Evolution-X/manifest -b cnb --git-lfs --depth=1 
 git clone https://github.com/protpr0t/local_manifest_alphaplus -b evox-17 .repo/local_manifests
 /opt/crave/resync.sh
 
+export BUILD_USERNAME=protpr0t
+export BUILD_HOSTNAME=crave
+export TZ=Asia/Jakarta
+export KBUILD_USERNAME="$BUILD_USERNAME"
+export KBUILD_HOSTNAME="$BUILD_HOSTNAME"
 export EVO_BUILD_TYPE=Unofficial
-. build/envsetup.sh
+source build/envsetup.sh
 
 croot
 if [ ! -f vendor/evolution-priv/keys/keys.sh ]; then

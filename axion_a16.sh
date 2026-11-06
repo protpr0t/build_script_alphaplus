@@ -36,7 +36,7 @@ echo "debug - build $(pwd)"
 source build/envsetup.sh
 gk -s || true
 axionSync
-export AXION_BUILD_TYPE=UNOFFICIAL
+export AXION_BUILD_TYPE=Unofficial
 axion alphaplus userdebug gms
 m installclean
 ax -br

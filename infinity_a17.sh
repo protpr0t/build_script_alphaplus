@@ -8,8 +8,6 @@ git clone https://github.com/protpr0t/local_manifest_alphaplus -b infinity-17 .r
 
 export INFINITY_BUILD_TYPE=UNOFFICIAL
 export INFINITY_MAINTAINER=protpr0t
-
-# Build flags (GApps build)
 export TARGET_SUPPORTS_BLUR=true
 export TARGET_HAS_UDFPS=false
 export WITH_GAPPS=true
